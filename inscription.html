@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Market - Inscription</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="inscription.css">
 </head>
 <body>
     <div class="container">
+        <div class="image-container">
+            <img class="logo" src="images/logo.png" alt="Logo Finance Market">
+        </div>
         <div class="form-container">
-            <div class="image-container">
-                <img src="images/logo.png" alt="Finance Market">
-            </div>
-            <form action="images/backgroundINscription.png" method="POST">
-                <h2>Inscription</h2>
+            <form action="" method="POST" id="signup-form">
+                <h2 id="login-form-title">Inscription</h2>
+
                 <div class="input-group">
                     <label for="nom">Nom</label>
                     <input type="text" id="nom" name="nom" placeholder="Nom" required>
@@ -30,8 +31,8 @@
                     <label for="password">Mot de passe</label>
                     <input type="password" id="password" name="password" placeholder="Mot de passe" required>
                 </div>
-                <button type="submit" class="submit-button">Se connecter</button>
-                <p>Vous avez déjà un compte, <a href="/login">connectez-vous</a></p>
+                <button type="submit" class="submit-button">S'inscrire</button>
+                <p>Vous avez déjà un compte, <a href="./index.html">connectez-vous</a></p>
             </form>
         </div>
     </div>

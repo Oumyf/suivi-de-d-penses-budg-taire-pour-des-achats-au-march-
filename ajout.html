@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajout de produits</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #ff6b6b;
+}
+
+.date-picker {
+    margin-bottom: 20px;
+    color: #ff4b4b;
+}
+
+.date-picker label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.date-picker input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.product {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.product h3 {
+    margin-top: 0;
+    color: #ff6b6b;
+}
+
+.product p {
+    margin: 5px 0;
+}
+
+.product button {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.product button:hover {
+    background-color: #ff4b4b;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Ajout de produits</h2>
+        <div class="date-picker">
+            <label for="date">Date planifiée</label>
+            <input type="date" id="date">
+        </div>
+        <div class="product">
+            <h3>Carottes</h3>
+            <p>Prix unitaire: <span>300</span></p>
+            <p>Quantité: <span>8</span></p>
+            <p>Prix total: <span>2400</span></p>
+            <button>Acheter</button>
+        </div>
+        <div class="product">
+            <h3>Carottes</h3>
+            <p>Prix unitaire: <span>300</span></p>
+            <p>Quantité: <span>8</span></p>
+            <p>Prix total: <span>2400</span></p>
+            <button>Acheter</button>
+        </div>
+    </div>
+</body>
+</html>

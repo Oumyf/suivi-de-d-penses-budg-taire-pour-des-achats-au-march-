@@ -19,6 +19,6 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
     } else {
         alert('Connexion réussie !');
         // Rediriger vers la page principale de l'application
-        window.location.href = '/inscription.html';
+        window.location.href = '/ajout.html';
     }
 });

@@ -6,13 +6,18 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
         
         document.getElementById('signup-form').addEventListener('submit', async (event) => {
             event.preventDefault();
-        
-            const email = event.target['signup-email'].value;
-            const password = event.target['signup-password'].value;
+            
+            const nom = event.target['nom'].value;
+            const prenom = event.target['prenom'].value;
+            const email = event.target['email'].value;
+            const password = event.target['password'].value;
         
             const { user, error } = await supabase.auth.signUp({
                 email: email,
                 password: password,
+                nom: nom,
+                prenom: prenom,
+
             });
         
             if (error) {
@@ -20,6 +25,6 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
             } else {
                 alert('Inscription réussie ! Veuillez vérifier votre email pour confirmer.');
                 // Optionnel : Rediriger vers la page de connexion
-                window.location.href = '/login.html';
+                window.location.href = './index.html';
             }
         });
