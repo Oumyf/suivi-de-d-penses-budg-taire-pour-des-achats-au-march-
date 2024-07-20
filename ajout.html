@@ -6,100 +6,200 @@
     <title>Ajout de produits</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-
         body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100%;
-}
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+        }
 
-.container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
 
-h2 {
-    color: #ff6b6b;
-}
+        h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
 
-.date-picker {
-    margin-bottom: 20px;
-    color: #ff4b4b;
-}
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-.date-picker label {
-    display: block;
-    margin-bottom: 5px;
-    color: #555;
-}
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
 
-.date-picker input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
 
-.product {
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
+        .form-group button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
 
-.product h3 {
-    margin-top: 0;
-    color: #ff6b6b;
-}
+        .form-group button:hover {
+            background-color: #ff4b4b;
+        }
 
-.product p {
-    margin: 5px 0;
-}
+        .total {
+            text-align: right;
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
 
-.product button {
-    background-color: #ff6b6b;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-}
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-.product button:hover {
-    background-color: #ff4b4b;
-}
+        .product {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
 
+        .product h3 {
+            margin-top: 0;
+            color: #ff6b6b;
+        }
+
+        .product p {
+            margin: 5px 0;
+        }
+
+        .product .actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .product .actions button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .product .actions button:hover {
+            background-color: #ff4b4b;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Ajout de produits</h2>
-        <div class="date-picker">
+        <div class="form-group">
             <label for="date">Date planifiée</label>
-            <input type="date" id="date">
+            <input type="date" id="date" onchange="afficherFormulaire()">
         </div>
-        <div class="product">
-            <h3>Carottes</h3>
-            <p>Prix unitaire: <span>300</span></p>
-            <p>Quantité: <span>8</span></p>
-            <p>Prix total: <span>2400</span></p>
-            <button>Acheter</button>
+
+        <div id="product-form" style="display: none;">
+            <div class="form-group">
+                <label for="nom_produit">Nom du produit</label>
+                <input type="text" id="nom_produit">
+            </div>
+            <div class="form-group">
+                <label for="prix">Prix du produit</label>
+                <input type="number" id="prix">
+            </div>
+            <div class="form-group">
+                <label for="quantite">Quantité</label>
+                <input type="number" id="quantite">
+            </div>
+            <div class="form-group">
+                <button onclick="ajouterProduit()">Ajouter le produit</button>
+            </div>
         </div>
-        <div class="product">
-            <h3>Carottes</h3>
-            <p>Prix unitaire: <span>300</span></p>
-            <p>Quantité: <span>8</span></p>
-            <p>Prix total: <span>2400</span></p>
-            <button>Acheter</button>
+
+        <div class="total" id="total" style="display: none;">Total: 0</div>
+        <h2 id="product-list-title" class="product-list-title" style="display: none;">Liste des produits</h2>
+        <div class="product-list" id="product-list">
+            <!-- Les produits ajoutés apparaîtront ici -->
         </div>
     </div>
+
+    <script>
+        function afficherFormulaire() {
+            const dateInput = document.getElementById('date').value;
+            if (dateInput) {
+                document.getElementById('product-form').style.display = 'block';
+                document.getElementById('product-list-title').style.display = 'block';
+                document.getElementById('total').style.display = 'block';
+            }
+        }
+
+        let total = 0;
+
+        function ajouterProduit() {
+            const nom = document.getElementById('nom_produit').value;
+            const prix = document.getElementById('prix').value;
+            const quantite = document.getElementById('quantite').value;
+
+            if (nom && prix && quantite) {
+                const prixTotal = prix * quantite;
+                total += prixTotal;
+
+                const productList = document.getElementById('product-list');
+
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product');
+
+                productDiv.innerHTML = `
+                    <h3>${nom}</h3>
+                    <p>Prix unitaire: <span>${prix}</span></p>
+                    <p>Quantité: <span>${quantite}</span></p>
+                    <p>Prix total: <span>${prixTotal}</span></p>
+                    <div class="actions">
+                        <button>Acheter</button>
+                    </div>
+                `;
+
+                productList.appendChild(productDiv);
+
+                document.getElementById('total').textContent = `Total: ${total}`;
+
+                // Réinitialiser les champs de formulaire
+                document.getElementById('nom_produit').value = '';
+                document.getElementById('prix').value = '';
+                document.getElementById('quantite').value = '';
+            } else {
+                alert('Veuillez remplir tous les champs.');
+            }
+        }
+    </script>
 </body>
 </html>
