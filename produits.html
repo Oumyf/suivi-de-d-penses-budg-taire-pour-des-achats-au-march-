@@ -197,6 +197,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
     <div class="container">
@@ -243,26 +244,26 @@
     </div>
 
     <script>
+        const supabaseUrl = 'https://wkwmyofpejlcwtvuhuwc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indrd215b2ZwZWpsY3d0dnVodXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjEzNzcxOTcsImV4cCI6MjAzNjk1MzE5N30.Pi3n1MW7EXQN_6MK27XRAi3Z85lID9E-AgrrBREg-vA';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
         document.addEventListener('DOMContentLoaded', () => {
             const savedDate = localStorage.getItem('date');
-            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
-
             if (savedDate) {
                 document.getElementById('date').value = savedDate;
                 afficherFormulaire();
-            } else {
-                document.getElementById('date').addEventListener('change', () => {
-                    const dateInput = document.getElementById('date').value;
-                    if (dateInput) {
-                        localStorage.setItem('date', dateInput);
-                        afficherFormulaire();
-                    }
-                });
             }
 
-            savedProducts.forEach(product => ajouterProduit(product, false));
+            document.getElementById('date').addEventListener('change', () => {
+                const dateInput = document.getElementById('date').value;
+                if (dateInput) {
+                    localStorage.setItem('date', dateInput);
+                    afficherFormulaire();
+                }
+            });
 
-            updateTotal();
+            loadProducts(); // Charge les produits dès le début
         });
 
         function afficherFormulaire() {
@@ -271,66 +272,81 @@
             document.getElementById('total').style.display = 'block';
         }
 
-        function ajouterProduit(product = null, save = true) {
-            const nom = product ? product.nom : document.getElementById('nom_produit').value;
-            const prix = product ? product.prix : document.getElementById('prix').value;
-            const quantite = product ? product.quantite : document.getElementById('quantite').value;
-            const dateProduit = product ? product.dateProduit : document.getElementById('date_produit').value;
+        async function ajouterProduit() {
+            const nom = document.getElementById('nom_produit').value;
+            const prix = document.getElementById('prix').value;
+            const quantite = document.getElementById('quantite').value;
+            const dateProduit = document.getElementById('date_produit').value;
 
             if (nom && prix && quantite && dateProduit) {
                 const prixTotal = prix * quantite;
 
-                const productList = document.getElementById('product-list');
+                try {
+                    const { data, error } = await supabase
+                        .from('produit')
+                        .insert([{ nom, prix, quantite, prixTotal, dateProduit, achete: false }]);
 
-                const productDiv = document.createElement('div');
-                productDiv.classList.add('product');
-                if (product && product.achete) {
-                    productDiv.classList.add('achete');
-                } else {
-                    productDiv.classList.add('non-achete');
+                    if (error) throw error;
+
+                    const newProduct = data[0];
+                    afficherProduit(newProduct);
+
+                    // Réinitialiser le formulaire
+                    document.getElementById('nom_produit').value = '';
+                    document.getElementById('prix').value = '';
+                    document.getElementById('quantite').value = '';
+                    document.getElementById('date_produit').value = '';
+
+                    updateTotal();
+                } catch (error) {
+                    console.error('Error adding product:', error.message);
+                    alert('Une erreur est survenue lors de l\'ajout du produit. Veuillez réessayer.');
                 }
-                productDiv.dataset.achete = product && product.achete ? 'true' : 'false';
-                productDiv.dataset.dateProduit = dateProduit;
-
-                productDiv.innerHTML = `
-                    <h3>${nom}</h3>
-                    <p>Prix: ${prix} FCFA</p>
-                    <p>Quantité: ${quantite}</p>
-                    <p>Total: ${prixTotal} FCFA</p>
-                    <p>Date: ${dateProduit}</p>
-                    <div class="actions">
-                        <button class="acheter" onclick="acheterProduit(this, ${prixTotal})">Acheter</button>
-                        <button class="modifier" onclick="modifierProduit(this, '${nom}', ${prix}, ${quantite}, ${prixTotal}, '${dateProduit}')">Modifier</button>
-                        <button class="supprimer" onclick="supprimerProduit(this, ${prixTotal})">Supprimer</button>
-                    </div>
-                `;
-
-                productList.appendChild(productDiv);
-
-                if (product && product.achete) {
-                    const acheterButton = productDiv.querySelector('.acheter');
-                    acheterButton.classList.add('achete');
-                    acheterButton.disabled = true;
-                }
-
-                if (save) {
-                    const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
-                    savedProducts.push({ nom, prix, quantite, prixTotal, dateProduit, achete: false });
-                    localStorage.setItem('products', JSON.stringify(savedProducts));
-                }
-
-                document.getElementById('nom_produit').value = '';
-                document.getElementById('prix').value = '';
-                document.getElementById('quantite').value = '';
-                document.getElementById('date_produit').value = '';
-
-                updateTotal();
             } else {
                 alert('Veuillez remplir tous les champs.');
             }
         }
 
-        function acheterProduit(button, prixTotal) {
+        function afficherProduit(product) {
+            const productList = document.getElementById('product-list');
+
+            const productDiv = document.createElement('div');
+            productDiv.classList.add('product');
+            if (product.achete) {
+                productDiv.classList.add('achete');
+            } else {
+                productDiv.classList.add('non-achete');
+            }
+            productDiv.dataset.achete = product.achete ? 'true' : 'false';
+            productDiv.dataset.dateProduit = product.dateProduit;
+
+            productDiv.innerHTML = `
+                <h3>${product.nom}</h3>
+                <p>Prix: ${product.prix} FCFA</p>
+                <p>Quantité: ${product.quantite}</p>
+                <p>Total: ${product.prixTotal} FCFA</p>
+                <p>Date: ${product.dateProduit}</p>
+                <div class="actions">
+                    <button class="acheter" onclick="acheterProduit(${product.id}, this, ${product.prixTotal})">Acheter</button>
+                    <button class="modifier" onclick="modifierProduit(${product.id}, '${product.nom}', ${product.prix}, ${product.quantite}, ${product.prixTotal}, '${product.dateProduit}')">Modifier</button>
+                    <button class="supprimer" onclick="supprimerProduit(${product.id}, this, ${product.prixTotal})">Supprimer</button>
+                </div>
+            `;
+
+            productList.appendChild(productDiv);
+        }
+
+        async function acheterProduit(productId, button, prixTotal) {
+            const { error } = await supabase
+                .from('produit')
+                .update({ achete: true })
+                .eq('id', productId);
+
+            if (error) {
+                console.error('Error updating product:', error.message);
+                return;
+            }
+
             const productDiv = button.closest('.product');
             productDiv.dataset.achete = 'true';
             productDiv.classList.remove('non-achete');
@@ -339,37 +355,31 @@
             button.textContent = 'Acheté';
             button.disabled = true;
 
-            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
-            const productIndex = savedProducts.findIndex(product => product.nom === productDiv.querySelector('h3').textContent);
-            if (productIndex > -1) {
-                savedProducts[productIndex].achete = true;
-                localStorage.setItem('products', JSON.stringify(savedProducts));
+            updateTotal();
+        }
+
+        async function supprimerProduit(productId, button, prixTotal) {
+            const { error } = await supabase
+                .from('produit')
+                .delete()
+                .eq('id', productId);
+
+            if (error) {
+                console.error('Error deleting product:', error.message);
+                return;
             }
 
+            button.closest('.product').remove();
             updateTotal();
         }
 
-        function supprimerProduit(button, prixTotal) {
-            const productDiv = button.closest('.product');
-            productDiv.remove();
-            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
-            const updatedProducts = savedProducts.filter(product => product.prixTotal !== prixTotal);
-            localStorage.setItem('products', JSON.stringify(updatedProducts));
-
-            updateTotal();
-        }
-
-        function modifierProduit(button, nom, prix, quantite, prixTotal, dateProduit) {
-            supprimerProduit(button, prixTotal);
+        async function modifierProduit(productId, nom, prix, quantite, prixTotal, dateProduit) {
+            await supprimerProduit(productId, null, prixTotal);
 
             document.getElementById('nom_produit').value = nom;
             document.getElementById('prix').value = prix;
             document.getElementById('quantite').value = quantite;
             document.getElementById('date_produit').value = dateProduit;
-
-            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
-            const updatedProducts = savedProducts.filter(product => product.prixTotal !== prixTotal);
-            localStorage.setItem('products', JSON.stringify(updatedProducts));
         }
 
         function filtrerProduits(filtre) {
@@ -405,9 +415,22 @@
         }
 
         function updateTotal() {
-            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
-            const total = savedProducts.reduce((acc, product) => acc + (product.achete ? product.prixTotal : 0), 0);
-            document.getElementById('total').textContent = `Total: ${total}`;
+            const total = Array.from(document.querySelectorAll('.product'))
+                .reduce((acc, product) => acc + (product.classList.contains('achete') ? parseFloat(product.querySelector('p:nth-of-type(4)').textContent.split(' ')[1]) : 0), 0);
+            document.getElementById('total').textContent = `Total: ${total} FCFA`;
+        }
+
+        async function loadProducts() {
+            const { data, error } = await supabase
+                .from('produit')
+                .select('*');
+
+            if (error) {
+                console.error('Error loading produit:', error.message);
+                return;
+            }
+
+            data.forEach(product => afficherProduit(product));
         }
     </script>
 </body>
