@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajout de produits</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+ body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px; /* Assure-toi que le padding est adéquat */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box; /* Inclut le padding et la bordure dans la largeur totale */
+}
+
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px; /* Réduit la largeur maximale pour les petits écrans */
+}
+
+h2 {
+    color: #ff6b6b;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-group input {
+    width: 90%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-group button {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 97%;
+    margin-top: 10px;
+}
+
+.form-group button:hover {
+    background-color: #ff4b4b;
+}
+
+.total {
+    text-align: right;
+    color: #ff6b6b;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.product-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.product {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    box-sizing: border-box; /* Inclut le padding et la bordure dans la largeur totale */
+}
+
+
+.product h3 {
+    margin-top: 0;
+    color: #ff6b6b;
+}
+
+.product p {
+    margin: 5px 0;
+}
+
+.product .actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.product .actions button {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.product .actions button:hover {
+    background-color: #ff4b4b;
+}
+
+.actions button.acheter {
+    background-color: #4CAF50;
+}
+
+.actions button.acheter:hover {
+    background-color: #45A049;
+}
+
+.actions button.modifier {
+    background-color: #ff9800;
+}
+
+.actions button.modifier:hover {
+    background-color: #fb8c00;
+}
+
+.actions button.supprimer {
+    background-color: #f44336;
+}
+
+.actions button.supprimer:hover {
+    background-color: #e53935;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 20px;
+    }
+
+    .container {
+        padding: 15px;
+        width: 100%;
+    }
+
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Ajout de produits</h2>
+        <div class="form-group">
+            <label for="date">Date planifiée</label>
+            <input type="date" id="date" onchange="afficherFormulaire()">
+        </div>
+
+        <div id="product-form" style="display: none;">
+            <div class="form-group">
+                <label for="nom_produit">Nom du produit</label>
+                <input type="text" id="nom_produit">
+            </div>
+            <div class="form-group">
+                <label for="prix">Prix du produit</label>
+                <input type="number" id="prix">
+            </div>
+            <div class="form-group">
+                <label for="quantite">Quantité</label>
+                <input type="number" id="quantite">
+            </div>
+            <div class="form-group">
+                <button onclick="ajouterProduit()">Ajouter le produit</button>
+            </div>
+        </div>
+
+        <div class="total" id="total" style="display: none;">Total: 0</div>
+        <h2 id="product-list-title" class="product-list-title" style="display: none;">Liste des produits</h2>
+        <div class="product-list" id="product-list">
+            <!-- Les produits ajoutés apparaîtront ici -->
+        </div>
+    </div>
+
+    <script>
+        let total = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedDate = localStorage.getItem('date');
+            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+            if (savedDate) {
+                document.getElementById('date').value = savedDate;
+                afficherFormulaire();
+            }
+
+            savedProducts.forEach(product => ajouterProduit(product, false));
+
+            total = savedProducts.reduce((acc, product) => acc + product.prixTotal, 0);
+            document.getElementById('total').textContent = `Total: ${total}`;
+        });
+
+        function afficherFormulaire() {
+            const dateInput = document.getElementById('date').value;
+            if (dateInput) {
+                localStorage.setItem('date', dateInput);
+                document.getElementById('product-form').style.display = 'block';
+                document.getElementById('product-list-title').style.display = 'block';
+                document.getElementById('total').style.display = 'block';
+            }
+        }
+
+        function ajouterProduit(product = null, save = true) {
+            const nom = product ? product.nom : document.getElementById('nom_produit').value;
+            const prix = product ? product.prix : document.getElementById('prix').value;
+            const quantite = product ? product.quantite : document.getElementById('quantite').value;
+
+            if (nom && prix && quantite) {
+                const prixTotal = prix * quantite;
+
+                const productList = document.getElementById('product-list');
+
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product');
+
+                productDiv.innerHTML = `
+                    <h3>${nom}</h3>
+                    <p>Prix unitaire: <span>${prix}</span></p>
+                    <p>Quantité: <span>${quantite}</span></p>
+                    <p>Prix total: <span>${prixTotal}</span></p>
+                    <div class="actions">
+                        <button class="acheter">Acheter</button>
+                        <button class="modifier" onclick="modifierProduit(this, '${nom}', ${prix}, ${quantite}, ${prixTotal})">Modifier</button>
+                        <button class="supprimer" onclick="supprimerProduit(this, ${prixTotal})">Supprimer</button>
+                    </div>
+                `;
+
+                productList.appendChild(productDiv);
+
+                if (save) {
+                    const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
+                    savedProducts.push({ nom, prix, quantite, prixTotal });
+                    localStorage.setItem('products', JSON.stringify(savedProducts));
+                }
+
+                total = JSON.parse(localStorage.getItem('products')).reduce((acc, product) => acc + product.prixTotal, 0);
+                document.getElementById('total').textContent = `Total: ${total}`;
+
+                // Réinitialiser les champs de formulaire si ce n'est pas une restauration
+                if (!product) {
+                    document.getElementById('nom_produit').value = '';
+                    document.getElementById('prix').value = '';
+                    document.getElementById('quantite').value = '';
+                }
+            } else {
+                alert('Veuillez remplir tous les champs.');
+            }
+        }
+
+        function supprimerProduit(button, prixTotal) {
+            const productDiv = button.closest('.product');
+            productDiv.remove();
+            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
+            const updatedProducts = savedProducts.filter(product => product.prixTotal !== prixTotal);
+            localStorage.setItem('products', JSON.stringify(updatedProducts));
+
+            total = updatedProducts.reduce((acc, product) => acc + product.prixTotal, 0);
+            document.getElementById('total').textContent = `Total: ${total}`;
+        }
+
+        function modifierProduit(button, nom, prix, quantite, prixTotal) {
+            // Supprimer le produit pour pouvoir le réajouter avec les nouvelles valeurs
+            supprimerProduit(button, prixTotal);
+
+            // Pré-remplir le formulaire avec les valeurs actuelles
+            document.getElementById('nom_produit').value = nom;
+            document.getElementById('prix').value = prix;
+            document.getElementById('quantite').value = quantite;
+
+            // Supprimer l'ancien produit de localStorage
+            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
+            const updatedProducts = savedProducts.filter(product => product.prixTotal !== prixTotal);
+            localStorage.setItem('products', JSON.stringify(updatedProducts));
+        }
+    </script>
+</body>
+</html>

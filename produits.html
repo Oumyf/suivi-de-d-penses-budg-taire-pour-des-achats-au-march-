@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajout de produits</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 90%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-group button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 97%;
+            margin-top: 10px;
+        }
+
+        .form-group button:hover {
+            background-color: #ff4b4b;
+        }
+
+        .total {
+            text-align: right;
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .product {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            box-sizing: border-box;
+        }
+
+        .product.achete {
+            border: 2px solid green;
+            box-shadow: 0 0 10px rgba(0, 128, 0, 0.5);
+        }
+
+        .product.non-achete {
+            border: 2px solid red;
+            background-color: #ffe6e6;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .product h3 {
+            margin-top: 0;
+            color: #ff6b6b;
+        }
+
+        .product p {
+            margin: 5px 0;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .actions button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .actions button:hover {
+            background-color: #ff4b4b;
+        }
+
+        .actions button.acheter {
+            background-color: #4CAF50;
+        }
+
+        .actions button.acheter:hover {
+            background-color: #45A049;
+        }
+
+        .actions button.modifier {
+            background-color: #ff9800;
+        }
+
+        .actions button.modifier:hover {
+            background-color: #fb8c00;
+        }
+
+        .actions button.supprimer {
+            background-color: #f44336;
+        }
+
+        .actions button.supprimer:hover {
+            background-color: #e53935;
+        }
+
+        .actions button.achete {
+            background-color: green !important;
+            color: white;
+            cursor: not-allowed;
+            box-shadow: 0 0 10px rgba(0, 128, 0, 0.5);
+        }
+
+        .filtre {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .filtre button {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .filtre button:hover {
+            background-color: #eee;
+        }
+
+        .filtre button.active {
+            background-color: #ff6b6b;
+            color: white;
+        }
+
+        .filtre input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px;
+            }
+
+            .container {
+                padding: 15px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Ajout de produits</h2>
+        <div class="form-group">
+            <label for="date">Date planifiée</label>
+            <input type="date" id="date">
+        </div>
+
+        <div id="product-form" style="display: none;">
+            <div class="form-group">
+                <label for="nom_produit">Nom du produit</label>
+                <input type="text" id="nom_produit">
+            </div>
+            <div class="form-group">
+                <label for="prix">Prix du produit</label>
+                <input type="number" id="prix">
+            </div>
+            <div class="form-group">
+                <label for="quantite">Quantité</label>
+                <input type="number" id="quantite">
+            </div>
+            <div class="form-group">
+                <label for="date_produit">Date du produit</label>
+                <input type="date" id="date_produit">
+            </div>
+            <div class="form-group">
+                <button onclick="ajouterProduit()">Ajouter le produit</button>
+            </div>
+        </div>
+
+        <div class="filtre">
+            <button class="active" onclick="filtrerProduits('tous')">Tous</button>
+            <button onclick="filtrerProduits('achetes')">Achetés</button>
+            <button onclick="filtrerProduits('non-achetes')">Non achetés</button>
+            <input type="date" id="filtre_date" onchange="filtrerParDate()">
+        </div>
+
+        <div class="total" id="total" style="display: none;">Total: 0</div>
+        <h2 id="product-list-title" class="product-list-title" style="display: none;">Liste des produits</h2>
+        <div class="product-list" id="product-list">
+            <!-- Les produits ajoutés apparaîtront ici -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedDate = localStorage.getItem('date');
+            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+            if (savedDate) {
+                document.getElementById('date').value = savedDate;
+                afficherFormulaire();
+            } else {
+                document.getElementById('date').addEventListener('change', () => {
+                    const dateInput = document.getElementById('date').value;
+                    if (dateInput) {
+                        localStorage.setItem('date', dateInput);
+                        afficherFormulaire();
+                    }
+                });
+            }
+
+            savedProducts.forEach(product => ajouterProduit(product, false));
+
+            updateTotal();
+        });
+
+        function afficherFormulaire() {
+            document.getElementById('product-form').style.display = 'block';
+            document.getElementById('product-list-title').style.display = 'block';
+            document.getElementById('total').style.display = 'block';
+        }
+
+        function ajouterProduit(product = null, save = true) {
+            const nom = product ? product.nom : document.getElementById('nom_produit').value;
+            const prix = product ? product.prix : document.getElementById('prix').value;
+            const quantite = product ? product.quantite : document.getElementById('quantite').value;
+            const dateProduit = product ? product.dateProduit : document.getElementById('date_produit').value;
+
+            if (nom && prix && quantite && dateProduit) {
+                const prixTotal = prix * quantite;
+
+                const productList = document.getElementById('product-list');
+
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product');
+                if (product && product.achete) {
+                    productDiv.classList.add('achete');
+                } else {
+                    productDiv.classList.add('non-achete');
+                }
+                productDiv.dataset.achete = product && product.achete ? 'true' : 'false';
+                productDiv.dataset.dateProduit = dateProduit;
+
+                productDiv.innerHTML = `
+                    <h3>${nom}</h3>
+                    <p>Prix: ${prix} FCFA</p>
+                    <p>Quantité: ${quantite}</p>
+                    <p>Total: ${prixTotal} FCFA</p>
+                    <p>Date: ${dateProduit}</p>
+                    <div class="actions">
+                        <button class="acheter" onclick="acheterProduit(this, ${prixTotal})">Acheter</button>
+                        <button class="modifier" onclick="modifierProduit(this, '${nom}', ${prix}, ${quantite}, ${prixTotal}, '${dateProduit}')">Modifier</button>
+                        <button class="supprimer" onclick="supprimerProduit(this, ${prixTotal})">Supprimer</button>
+                    </div>
+                `;
+
+                productList.appendChild(productDiv);
+
+                if (product && product.achete) {
+                    const acheterButton = productDiv.querySelector('.acheter');
+                    acheterButton.classList.add('achete');
+                    acheterButton.disabled = true;
+                }
+
+                if (save) {
+                    const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
+                    savedProducts.push({ nom, prix, quantite, prixTotal, dateProduit, achete: false });
+                    localStorage.setItem('products', JSON.stringify(savedProducts));
+                }
+
+                document.getElementById('nom_produit').value = '';
+                document.getElementById('prix').value = '';
+                document.getElementById('quantite').value = '';
+                document.getElementById('date_produit').value = '';
+
+                updateTotal();
+            } else {
+                alert('Veuillez remplir tous les champs.');
+            }
+        }
+
+        function acheterProduit(button, prixTotal) {
+            const productDiv = button.closest('.product');
+            productDiv.dataset.achete = 'true';
+            productDiv.classList.remove('non-achete');
+            productDiv.classList.add('achete');
+            button.classList.add('achete');
+            button.textContent = 'Acheté';
+            button.disabled = true;
+
+            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
+            const productIndex = savedProducts.findIndex(product => product.nom === productDiv.querySelector('h3').textContent);
+            if (productIndex > -1) {
+                savedProducts[productIndex].achete = true;
+                localStorage.setItem('products', JSON.stringify(savedProducts));
+            }
+
+            updateTotal();
+        }
+
+        function supprimerProduit(button, prixTotal) {
+            const productDiv = button.closest('.product');
+            productDiv.remove();
+            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
+            const updatedProducts = savedProducts.filter(product => product.prixTotal !== prixTotal);
+            localStorage.setItem('products', JSON.stringify(updatedProducts));
+
+            updateTotal();
+        }
+
+        function modifierProduit(button, nom, prix, quantite, prixTotal, dateProduit) {
+            supprimerProduit(button, prixTotal);
+
+            document.getElementById('nom_produit').value = nom;
+            document.getElementById('prix').value = prix;
+            document.getElementById('quantite').value = quantite;
+            document.getElementById('date_produit').value = dateProduit;
+
+            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
+            const updatedProducts = savedProducts.filter(product => product.prixTotal !== prixTotal);
+            localStorage.setItem('products', JSON.stringify(updatedProducts));
+        }
+
+        function filtrerProduits(filtre) {
+            const buttons = document.querySelectorAll('.filtre button');
+            buttons.forEach(button => button.classList.remove('active'));
+            document.querySelector(`.filtre button[onclick="filtrerProduits('${filtre}')"]`).classList.add('active');
+
+            const products = document.querySelectorAll('.product');
+
+            products.forEach(product => {
+                switch (filtre) {
+                    case 'tous':
+                        product.style.display = 'block';
+                        break;
+                    case 'achetes':
+                        product.style.display = product.dataset.achete === 'true' ? 'block' : 'none';
+                        break;
+                    case 'non-achetes':
+                        product.style.display = product.dataset.achete === 'true' ? 'none' : 'block';
+                        break;
+                }
+            });
+        }
+
+        function filtrerParDate() {
+            const dateFiltre = document.getElementById('filtre_date').value;
+            const products = document.querySelectorAll('.product');
+
+            products.forEach(product => {
+                const productDate = product.dataset.dateProduit;
+                product.style.display = productDate === dateFiltre ? 'block' : 'none';
+            });
+        }
+
+        function updateTotal() {
+            const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
+            const total = savedProducts.reduce((acc, product) => acc + (product.achete ? product.prixTotal : 0), 0);
+            document.getElementById('total').textContent = `Total: ${total}`;
+        }
+    </script>
+</body>
+</html>

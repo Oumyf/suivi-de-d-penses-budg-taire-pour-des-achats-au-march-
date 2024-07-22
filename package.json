@@ -1,0 +1,15 @@
+{
+  "name": "suivi-de-d-penses-budg-taire-pour-des-achats-au-march-",
+  "version": "1.0.0",
+  "description": "L'application doit permettre aux utilisateurs de renseigner les produits qu'ils envisagent d'acheter, en spécifiant le prix et la quantité pour chaque produit. Une fois un produit acheté, l'utilisateur doit pouvoir le marquer comme acheté. Les utilisateurs doivent également pouvoir consulter les achats effectués en fonction des dates.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.44.4"
+  }
+}
